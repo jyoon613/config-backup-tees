@@ -28,8 +28,8 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
 # ── CONFIG: edit these ──────────────────────────────────────────────
-SCHEDULE_ID = "1470"        # from DevTools, see step 1 above
-BOOKING_CLASS_ID = "929"   # from DevTools, see step 1 above
+SCHEDULE_ID = "1470"
+BOOKING_CLASS_ID = "929"
 
 FACILITY_BOOKING_URL = "https://foreupsoftware.com/index.php/booking/19348/1470"
 LOGIN_URL = "https://foreupsoftware.com/index.php/api/booking/users/login"
@@ -91,7 +91,13 @@ def login():
     """Log in with your foreUP account and return an authenticated session."""
     session = requests.Session()
     headers = {"User-Agent": "Mozilla/5.0"}
-    payload = {"email": FOREUP_EMAIL, "password": FOREUP_PASSWORD}
+    payload = {
+        "username": FOREUP_EMAIL,
+        "password": FOREUP_PASSWORD,
+        "api_key": "",
+        "booking_class_id": "",
+        "course_id": "19348",
+    }
     try:
         resp = session.post(LOGIN_URL, data=payload, headers=headers, timeout=15)
         resp.raise_for_status()
