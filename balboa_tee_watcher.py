@@ -1,4 +1,4 @@
-"""
+    """
 Balboa Park Tee Time Watcher (GitHub Actions edition)
 ------------------------------------------------------
 Watches Balboa Park Golf Course's public tee-sheet for openings that match
@@ -28,8 +28,8 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
 # ── CONFIG: edit these ──────────────────────────────────────────────
-SCHEDULE_ID = "REPLACE_ME"        # from DevTools, see step 1 above
-BOOKING_CLASS_ID = "REPLACE_ME"   # from DevTools, see step 1 above
+SCHEDULE_ID = "1470"        # from DevTools, see step 1 above
+BOOKING_CLASS_ID = "929"   # from DevTools, see step 1 above
 
 FACILITY_BOOKING_URL = "https://foreupsoftware.com/index.php/booking/19348/1470"
 LOGIN_URL = "https://foreupsoftware.com/index.php/api/booking/users/login"
