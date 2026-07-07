@@ -40,7 +40,7 @@ FOREUP_PASSWORD = os.environ.get("FOREUP_PASSWORD")
 
 TARGET_WEEKDAY = 3          # Monday=0 ... Thursday=3 ... Sunday=6
 TIME_WINDOW_START = "06:00"  # 24hr "HH:MM", early morning
-TIME_WINDOW_END = "11:00"
+TIME_WINDOW_END = "23:00"
 PLAYERS = 1
 DAYS_AHEAD_TO_CHECK = 14      # how far out to look each pass
 
