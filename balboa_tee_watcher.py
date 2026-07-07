@@ -75,7 +75,7 @@ def send_text(message):
     if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
         print("[!] SMTP_EMAIL / SMTP_APP_PASSWORD not set — printing instead of texting:")
         print(message)
-        return
+        return False
     msg = MIMEText(message)
     msg["From"] = SMTP_EMAIL
     msg["To"] = PHONE_SMS_GATEWAY
@@ -86,8 +86,10 @@ def send_text(message):
             server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
             server.sendmail(SMTP_EMAIL, [PHONE_SMS_GATEWAY], msg.as_string())
         print(f"[✓] Text sent: {message}")
+        return True
     except Exception as e:
         print(f"[!] Failed to send text: {e}")
+        return False
 
 
 def login():
