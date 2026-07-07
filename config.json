@@ -6,15 +6,5 @@
   "time_window_start": "06:00",
   "time_window_end": "17:00",
   "players": 1,
-  "courses": {
-    "balboa": {
-      "enabled": true,
-      "name": "Balboa Park",
-      "schedule_id": "1470",
-      "booking_class_id": "929",
-      "course_id": "19348",
-      "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
-      "requires_card": false
-    }
-  }
+  "courses": {}
 }
