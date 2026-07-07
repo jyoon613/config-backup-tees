@@ -38,9 +38,12 @@ API_URL = "https://foreupsoftware.com/index.php/api/booking/times"
 FOREUP_EMAIL = os.environ.get("FOREUP_EMAIL")
 FOREUP_PASSWORD = os.environ.get("FOREUP_PASSWORD")
 
+# --- TEST MODE: leave these as-is for one more test run, then revert to
+# TARGET_WEEKDAY=3, TIME_WINDOW_START="06:00", TIME_WINDOW_END="11:00"
+# once you've confirmed a text arrives ---
 TARGET_WEEKDAY = 3          # Monday=0 ... Thursday=3 ... Sunday=6
-TIME_WINDOW_START = "06:00"  # 24hr "HH:MM", early morning
-TIME_WINDOW_END = "23:00"
+TIME_WINDOW_START = "00:00"
+TIME_WINDOW_END = "23:59"
 PLAYERS = 1
 DAYS_AHEAD_TO_CHECK = 14      # how far out to look each pass
 
@@ -156,23 +159,25 @@ def check_date(session, date_str):
 
 
 def in_time_window(time_str):
-    """time_str like '7:00 AM' -> check against TIME_WINDOW_START/END."""
+    """time_str like '2026-07-09 16:21' -> check against TIME_WINDOW_START/END."""
     try:
-        t = datetime.strptime(time_str.strip(), "%I:%M %p").time()
+        dt = datetime.strptime(time_str.strip(), "%Y-%m-%d %H:%M")
+        t = dt.time()
         start = datetime.strptime(TIME_WINDOW_START, "%H:%M").time()
         end = datetime.strptime(TIME_WINDOW_END, "%H:%M").time()
         return start <= t <= end
-    except Exception:
+    except Exception as e:
+        print(f"[DEBUG] Could not parse time '{time_str}': {e}")
         return False
 
 
 def next_target_weekday_dates(count=3):
-    """Return the next `count` upcoming dates matching TARGET_WEEKDAY, within DAYS_AHEAD_TO_CHECK."""
+    """Return the next `count` upcoming dates, ignoring weekday filter (test mode)."""
     dates = []
     today = datetime.now()
     for i in range(DAYS_AHEAD_TO_CHECK):
         d = today + timedelta(days=i)
-        if d.weekday() == TARGET_WEEKDAY:
+        if True:  # TEST MODE: revert to `if d.weekday() == TARGET_WEEKDAY:` afterward
             dates.append(d)
         if len(dates) >= count:
             break
@@ -183,7 +188,6 @@ def run_once(seen, session):
     for d in next_target_weekday_dates():
         date_str = d.strftime("%m-%d-%Y")
         slots = check_date(session, date_str)
-        print(f"[DEBUG] {date_str} raw response (first 2 entries): {slots[:2] if isinstance(slots, list) else slots}")
         if not isinstance(slots, list):
             continue
         for slot in slots:
@@ -195,8 +199,12 @@ def run_once(seen, session):
                 key = f"{date_str}_{slot_time}"
                 if key in seen:
                     continue
+                try:
+                    friendly_time = datetime.strptime(slot_time.strip(), "%Y-%m-%d %H:%M").strftime("%-I:%M %p")
+                except Exception:
+                    friendly_time = slot_time
                 message = (
-                    f"Balboa Park opening: {d.strftime('%a %m/%d')} at {slot_time} "
+                    f"Balboa Park opening: {d.strftime('%a %m/%d')} at {friendly_time} "
                     f"({available} spot(s)). Book now: {FACILITY_BOOKING_URL}"
                 )
                 send_text(message)
@@ -220,10 +228,10 @@ def main():
     if session is None:
         print("!! Could not log in — skipping this run.")
         return
- 
+
     seen = load_seen()
     run_once(seen, session)
- 
- 
+
+
 if __name__ == "__main__":
     main()
