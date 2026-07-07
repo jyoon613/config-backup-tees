@@ -183,6 +183,7 @@ def run_once(seen, session):
     for d in next_target_weekday_dates():
         date_str = d.strftime("%m-%d-%Y")
         slots = check_date(session, date_str)
+        print(f"[DEBUG] {date_str} raw response (first 2 entries): {slots[:2] if isinstance(slots, list) else slots}")
         if not isinstance(slots, list):
             continue
         for slot in slots:
