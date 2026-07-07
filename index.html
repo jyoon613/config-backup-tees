@@ -108,4 +108,205 @@
     </label>
     <label class="course-row">
       <input type="checkbox" id="course-missionbay">
-      <div><div
+      <div><div class="course-name">Mission Bay</div><div class="course-hint">No card required at booking &mdash; needs setup</div></div>
+    </label>
+    <label class="course-row">
+      <input type="checkbox" id="course-torrey">
+      <div><div class="course-name">Torrey Pines</div><div class="course-hint">Alert-only: card required at booking &mdash; needs setup</div></div>
+    </label>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Days</p>
+    <div id="day-buttons"></div>
+  </div>
+
+  <div class="card">
+    <div class="row-2">
+      <div>
+        <label class="field-label">Earliest time</label>
+        <input type="time" id="time-start" value="06:00">
+      </div>
+      <div>
+        <label class="field-label">Latest time</label>
+        <input type="time" id="time-end" value="11:00">
+      </div>
+    </div>
+    <label class="field-label">Players</label>
+    <select id="players">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+
+  <button class="primary" id="save-btn">Save settings</button>
+  <div id="status"></div>
+  <p class="help-text" style="margin-top:1rem;">
+    <button class="secondary" id="disconnect-btn">Disconnect this browser</button>
+  </p>
+</div>
+
+<script>
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+let selectedDays = new Set([3]);
+
+const KNOWN_COURSES = {
+  balboa: {name: "Balboa Park", schedule_id: "1470", booking_class_id: "929", course_id: "19348", facility_url: "https://foreupsoftware.com/index.php/booking/19348/1470", requires_card: false},
+  mission_bay: {name: "Mission Bay", schedule_id: "REPLACE_ME", booking_class_id: "REPLACE_ME", course_id: "REPLACE_ME", facility_url: "REPLACE_ME_URL", requires_card: false},
+  torrey_pines: {name: "Torrey Pines", schedule_id: "REPLACE_ME", booking_class_id: "REPLACE_ME", course_id: "REPLACE_ME", facility_url: "REPLACE_ME_URL", requires_card: true},
+};
+
+function ghCreds() {
+  return {
+    owner: localStorage.getItem('tt_owner'),
+    repo: localStorage.getItem('tt_repo'),
+    token: localStorage.getItem('tt_token'),
+  };
+}
+
+function renderDayButtons() {
+  const wrap = document.getElementById('day-buttons');
+  wrap.innerHTML = '';
+  days.forEach((d, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = d;
+    if (selectedDays.has(i)) btn.classList.add('selected');
+    btn.onclick = () => {
+      if (selectedDays.has(i)) selectedDays.delete(i); else selectedDays.add(i);
+      renderDayButtons();
+    };
+    wrap.appendChild(btn);
+  });
+}
+renderDayButtons();
+
+async function githubRequest(path, options = {}) {
+  const { owner, repo, token } = ghCreds();
+  const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    ...options,
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github+json",
+      ...(options.headers || {}),
+    },
+  });
+  return resp;
+}
+
+async function loadCurrentConfig() {
+  try {
+    const resp = await githubRequest('config.json');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const content = JSON.parse(atob(data.content));
+
+    selectedDays = new Set(content.target_weekdays || [3]);
+    renderDayButtons();
+    document.getElementById('time-start').value = content.time_window_start || "06:00";
+    document.getElementById('time-end').value = content.time_window_end || "11:00";
+    document.getElementById('players').value = String(content.players || 1);
+
+    document.getElementById('course-balboa').checked = !!(content.courses || {}).balboa;
+    document.getElementById('course-missionbay').checked = !!(content.courses || {}).mission_bay;
+    document.getElementById('course-torrey').checked = !!(content.courses || {}).torrey_pines;
+  } catch (e) {
+    console.log('Could not load existing config (may not exist yet):', e);
+  }
+}
+
+async function saveConfig() {
+  const statusEl = document.getElementById('status');
+  const saveBtn = document.getElementById('save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+  statusEl.className = '';
+  statusEl.style.display = 'none';
+
+  const courses = {};
+  if (document.getElementById('course-balboa').checked) courses.balboa = { enabled: true, ...KNOWN_COURSES.balboa };
+  if (document.getElementById('course-missionbay').checked) courses.mission_bay = { enabled: true, ...KNOWN_COURSES.mission_bay };
+  if (document.getElementById('course-torrey').checked) courses.torrey_pines = { enabled: true, ...KNOWN_COURSES.torrey_pines };
+
+  const config = {
+    target_weekdays: Array.from(selectedDays).sort(),
+    time_window_start: document.getElementById('time-start').value,
+    time_window_end: document.getElementById('time-end').value,
+    players: parseInt(document.getElementById('players').value, 10),
+    courses: courses,
+  };
+
+  try {
+    let sha;
+    const existing = await githubRequest('config.json');
+    if (existing.ok) {
+      const data = await existing.json();
+      sha = data.sha;
+    }
+
+    const contentEncoded = btoa(JSON.stringify(config, null, 2));
+    const putResp = await githubRequest('config.json', {
+      method: 'PUT',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "Update tee time watcher settings",
+        content: contentEncoded,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+
+    if (putResp.ok) {
+      statusEl.textContent = 'Saved. Your watcher will use these settings on its next check (within ~10 minutes).';
+      statusEl.className = 'success';
+    } else {
+      const errText = await putResp.text();
+      statusEl.textContent = `Save failed: ${errText}`;
+      statusEl.className = 'error';
+    }
+  } catch (e) {
+    statusEl.textContent = `Save failed: ${e.message}`;
+    statusEl.className = 'error';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save settings';
+  }
+}
+
+document.getElementById('save-btn').onclick = saveConfig;
+
+document.getElementById('connect-btn').onclick = () => {
+  const owner = document.getElementById('gh-owner').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const token = document.getElementById('gh-token').value.trim();
+  if (!owner || !repo || !token) {
+    document.getElementById('setup-status').textContent = 'Please fill in all three fields.';
+    return;
+  }
+  localStorage.setItem('tt_owner', owner);
+  localStorage.setItem('tt_repo', repo);
+  localStorage.setItem('tt_token', token);
+  showMainScreen();
+};
+
+document.getElementById('disconnect-btn').onclick = () => {
+  localStorage.removeItem('tt_owner');
+  localStorage.removeItem('tt_repo');
+  localStorage.removeItem('tt_token');
+  location.reload();
+};
+
+function showMainScreen() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+  loadCurrentConfig();
+}
+
+// On load, check if already connected
+const { owner, repo, token } = ghCreds();
+if (owner && repo && token) {
+  showMainScreen();
+}
+</script>
+</body>
+</html>
