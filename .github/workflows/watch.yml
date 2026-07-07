@@ -1,4 +1,4 @@
-name: Balboa Tee Time Watcher
+name: Tee Time Watcher
 
 on:
   schedule:
@@ -31,7 +31,7 @@ jobs:
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           FOREUP_EMAIL: ${{ secrets.FOREUP_EMAIL }}
           FOREUP_PASSWORD: ${{ secrets.FOREUP_PASSWORD }}
-        run: python balboa_tee_watcher.py
+        run: python tee_time_watcher.py
 
       - name: Save updated seen-list
         run: |
