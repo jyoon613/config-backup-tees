@@ -217,4 +217,12 @@ def main():
 
     session = login()
     if session is None:
-        print("!!
+        print("!! Could not log in — skipping this run.")
+        return
+ 
+    seen = load_seen()
+    run_once(seen, session)
+ 
+ 
+if __name__ == "__main__":
+    main()
