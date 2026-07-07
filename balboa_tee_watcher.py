@@ -1,4 +1,4 @@
-    """
+"""
 Balboa Park Tee Time Watcher (GitHub Actions edition)
 ------------------------------------------------------
 Watches Balboa Park Golf Course's public tee-sheet for openings that match
