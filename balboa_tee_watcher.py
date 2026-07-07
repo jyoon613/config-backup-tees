@@ -209,9 +209,10 @@ def run_once(seen, session):
                     f"Balboa Park opening: {d.strftime('%a %m/%d')} at {friendly_time} "
                     f"({available} spot(s)). Book now: {FACILITY_BOOKING_URL}"
                 )
-                send_text(message)
-                mark_seen(key)
-                seen.add(key)
+                sent_ok = send_text(message)
+                if sent_ok:
+                    mark_seen(key)
+                    seen.add(key)
 
 
 def main():
