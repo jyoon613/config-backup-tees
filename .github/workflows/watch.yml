@@ -4,7 +4,7 @@ on:
   schedule:
     # Every 10 minutes. GitHub's scheduler can lag during busy times,
     # so treat this as "roughly every 10 min," not exact.
-    - cron: "*/10 * * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch: {}   # lets you manually trigger a run from the Actions tab, for testing
 
 permissions:
