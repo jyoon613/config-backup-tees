@@ -2,7 +2,7 @@ name: Tee Time Watcher
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -31,10 +31,11 @@ jobs:
           FOREUP_PASSWORD: ${{ secrets.FOREUP_PASSWORD }}
         run: python tee_time_watcher.py
 
-      - name: Save updated seen-list
+      - name: Save state and heartbeat
         run: |
           git config user.name "tee-time-bot"
           git config user.email "actions@github.com"
-          git add seen.txt || true
-          git diff --cached --quiet || git commit -m "update seen list"
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > last_run.txt
+          git add seen.txt last_run.txt || true
+          git diff --cached --quiet || git commit -m "heartbeat + update seen list"
           git push || true
