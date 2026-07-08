@@ -3,7 +3,7 @@
     3
   ],
   "time_window_start": "06:00",
-  "time_window_end": "11:00",
+  "time_window_end": "23:00",
   "players": 1,
   "courses": {
     "balboa": {
