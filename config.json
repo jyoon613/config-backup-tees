@@ -14,24 +14,6 @@
       "course_id": "19348",
       "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
       "requires_card": false
-    },
-    "mission_bay": {
-      "enabled": true,
-      "name": "Mission Bay",
-      "schedule_id": "1469",
-      "booking_class_id": "925",
-      "course_id": "19346",
-      "facility_url": "https://foreupsoftware.com/index.php/booking/19346/1469",
-      "requires_card": false
-    },
-    "torrey_pines": {
-      "enabled": true,
-      "name": "Torrey Pines",
-      "schedule_id": "1487",
-      "booking_class_id": "888",
-      "course_id": "19347",
-      "facility_url": "https://foreupsoftware.com/index.php/booking/19347/1487",
-      "requires_card": true
     }
   }
 }
