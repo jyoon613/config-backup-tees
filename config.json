@@ -1,9 +1,6 @@
 {
   "target_weekdays": [
-    2,
-    3,
-    4,
-    5
+    3
   ],
   "time_window_start": "06:00",
   "time_window_end": "11:00",
