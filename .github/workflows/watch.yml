@@ -40,3 +40,4 @@ jobs:
           git add seen.txt || true
           git diff --cached --quiet || git commit -m "update seen list"
           git push || true
+
