@@ -222,7 +222,7 @@ async function saveConfig() {
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving...';
   statusEl.className = '';
-  statusEl.style.display = 'none';
+  statusEl.removeAttribute('style');
 
   const courses = {};
   if (document.getElementById('course-balboa').checked) courses.balboa = { enabled: true, ...KNOWN_COURSES.balboa };
