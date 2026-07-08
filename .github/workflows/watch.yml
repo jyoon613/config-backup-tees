@@ -1,0 +1,40 @@
+name: Tee Time Watcher
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  check-tee-times:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run watcher
+        env:
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          FOREUP_EMAIL: ${{ secrets.FOREUP_EMAIL }}
+          FOREUP_PASSWORD: ${{ secrets.FOREUP_PASSWORD }}
+        run: python tee_time_watcher.py
+
+      - name: Save updated seen-list
+        run: |
+          git config user.name "tee-time-bot"
+          git config user.email "actions@github.com"
+          git add seen.txt || true
+          git diff --cached --quiet || git commit -m "update seen list"
+          git push || true
