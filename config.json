@@ -1,6 +1,7 @@
 {
   "target_weekdays": [
-    3
+    3,
+    4
   ],
   "time_window_start": "06:00",
   "time_window_end": "23:00",
@@ -14,6 +15,15 @@
       "course_id": "19348",
       "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
       "requires_card": false
+    },
+    "torrey_pines": {
+      "enabled": true,
+      "name": "Torrey Pines",
+      "schedule_id": "REPLACE_ME",
+      "booking_class_id": "REPLACE_ME",
+      "course_id": "REPLACE_ME",
+      "facility_url": "REPLACE_ME_URL",
+      "requires_card": true
     }
   }
 }
