@@ -1,9 +1,10 @@
 {
   "target_weekdays": [
+    2,
     3
   ],
   "time_window_start": "06:00",
-  "time_window_end": "11:00",
+  "time_window_end": "15:00",
   "players": 1,
   "courses": {
     "balboa": {
@@ -14,6 +15,15 @@
       "course_id": "19348",
       "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
       "requires_card": false
+    },
+    "torrey_pines": {
+      "enabled": true,
+      "name": "Torrey Pines",
+      "schedule_id": "1487",
+      "booking_class_id": "888",
+      "course_id": "19347",
+      "facility_url": "https://foreupsoftware.com/index.php/booking/19347/1487",
+      "requires_card": true
     }
   }
 }
