@@ -15,15 +15,6 @@
       "course_id": "19348",
       "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
       "requires_card": false
-    },
-    "torrey_pines": {
-      "enabled": true,
-      "name": "Torrey Pines",
-      "schedule_id": "REPLACE_ME",
-      "booking_class_id": "REPLACE_ME",
-      "course_id": "REPLACE_ME",
-      "facility_url": "REPLACE_ME_URL",
-      "requires_card": true
     }
   }
 }
