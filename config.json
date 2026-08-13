@@ -1,11 +1,10 @@
 {
   "target_weekdays": [
-    2,
     3
   ],
   "time_window_start": "06:00",
   "time_window_end": "14:00",
-  "players": 1,
+  "players": 3,
   "courses": {
     "balboa": {
       "enabled": true,
@@ -14,6 +13,15 @@
       "booking_class_id": "929",
       "course_id": "19348",
       "facility_url": "https://foreupsoftware.com/index.php/booking/19348/1470",
+      "requires_card": false
+    },
+    "mission_bay": {
+      "enabled": true,
+      "name": "Mission Bay",
+      "schedule_id": "1469",
+      "booking_class_id": "925",
+      "course_id": "19346",
+      "facility_url": "https://foreupsoftware.com/index.php/booking/19346/1469",
       "requires_card": false
     },
     "torrey_pines": {
